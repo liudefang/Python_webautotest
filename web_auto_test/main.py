@@ -77,7 +77,7 @@ if __name__ == '__main__':
                         driver.quit()
                         break
                     logger.info('计划运行完成，正在关闭浏览器')
-                    driver.close()
+                    #driver.close()
                     driver.quit()
                     logger.info('####################### 测试结束 #######################')
 

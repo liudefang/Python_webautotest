@@ -5,7 +5,7 @@
 # @File    : seleniumutil.py
 import time
 from selenium import webdriver
-
+from selenium.webdriver import ActionChains
 from publicpkg.mylogger import logger
 
 
@@ -63,12 +63,65 @@ class SeleniumUtil:
     #切换到iframe里面
     def switch_to_frame(self,frame):
         try:
-            self.driver.swith_to_frame(frame)
+            self.driver.switch_to.frame(frame)
             logger.info('切换至frame（id/name/xpath = %s）成功' % frame)
             return ('Pass', 'run success')
         except Exception as e:
              logger.error('切换至frame（id/name/xpath = %s）失败' % frame)
              return ('Fail', e)
+
+    # 通过xpath切换到iframe里面
+    def switch_to_frame_xpath(self, frame):
+        try:
+            self.driver.switch_to.frame(self.driver.find_element_by_xpath(frame))
+            logger.info('切换至frame（xpath = %s）成功' % frame)
+            return ('Pass', 'run success')
+        except Exception as e:
+            logger.error('切换至frame（xpath = %s）失败' % frame)
+            return ('Fail', e)
+
+    #切换到新的窗口
+    def current_window_handle(self):
+        try:
+
+            '''#  得到当前窗口的句柄
+                now_handle = driver.current_window_handle
+                print("当前窗口句柄：" + now_handle)
+                # 得到所有窗口的句柄
+                all_handles = driver.window_handles
+            print("++++", driver.window_handles[1])'''
+            new_window = self.driver.window_handles[1]
+            self.driver.switch_to.window(new_window)
+            logger.info('切换到新的窗口成功:%s' % new_window)
+            return ('Pass','切换到新窗口成功')
+        except Exception as e:
+            logger.info('切换到新的窗口失败:%s' % new_window)
+            return ('Fail', '切换到新窗口失败')
+
+    #切换到原来的窗口
+    def now_window_handle(self):
+        try:
+            now_handle = self.driver.window_handles[0]
+            self.driver.switch_to.window(now_handle)
+            print("当前窗口句柄1：" + now_handle)
+            logger.info('切换到原来的窗口成功:%s' %now_handle)
+            return('Pass','切换到原来的窗口成功')
+        except Exception as e:
+            logger.info('切换到原来的窗口失败:%s' % now_handle)
+            return ('Fail', '切换到原来的窗口失败')
+
+    #鼠标进行移动，让弹框弹出来
+    def move_to_element(self,movexpath):
+        try:
+            # 先让选项框弹出来
+            mouse = self.driver.find_element_by_xpath(movexpath)
+            ActionChains(self.driver).move_to_element(mouse).perform()
+            logger.info('选项框弹出成功:%s' %movexpath)
+            return ('Pass','选项框弹出成功')
+        except Exception as e:
+            logger.info('选项框弹出失败:%s' % movexpath)
+            return  ('Fail','选项框弹出失败')
+
 
     #根据id查找元素
     def find_element_by_id(self, id):
@@ -133,4 +186,16 @@ class SeleniumUtil:
             return ('Pass', '断言成功')
         except Exception as e:
             return ('Fail', '断言失败')
+
+    #断言文本内的提示信息中是否存在某关键字或关键字字符串
+    def assert_text(self,titleStr):
+        try:
+            aElement = self.driver.find_element_by_class_name("l-dialog-content")
+            a_text = aElement.text
+            # print("a_text:"+a_text)
+            assert titleStr in a_text, "%s not found in text!" % titleStr
+            logger.info('断言文本提示信息为:%s' %titleStr)
+            return ('Pass','断言文本提示信息成功!')
+        except AssertionError as e:
+            return ('Fail', '断言文本提示信息失败!')
 

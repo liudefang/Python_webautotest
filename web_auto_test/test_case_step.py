@@ -94,8 +94,17 @@ class TestCaseStep:
             inparameters = inparameters.split('||')  # 输入参数之间以||分隔
 
         command = command.lower()
-        if command == '切换frame':
+        if command == '切换入iframe':
             result = selenium_util.switch_to_frame(inparameters[0])
+            return  result
+        if command == '切换入xpathifram':
+            result = selenium_util.switch_to_frame_xpath(inparameters[0])
+            return  result
+        elif command == '切换到新的窗口':
+            result = selenium_util.current_window_handle()
+            return result
+        elif command == '切换到原来的窗口':
+            result = selenium_util.now_window_handle()
             return  result
         elif command == '等待':
             second = int(inparameters[0])
@@ -113,6 +122,14 @@ class TestCaseStep:
             result = selenium_util.assert_string_in_pagesource(assertString)
             return result
             logger.info('result:%s' % result)
+        elif command == '断言文本提示信息':
+            titleStr = inparameters[0]
+            result = selenium_util.assert_text(titleStr)
+            return result
+        elif command == '弹出选项框':
+            movexpath = inparameters[0]
+            result = selenium_util.move_to_element(movexpath)
+            return result
 
 
     # 执行元素操作
